@@ -19,7 +19,7 @@ h = exp(-1i*2*k*sqrt(x.^2 + y.^2 + z^2));
 H =  fft2(h); 
 %%
 load('rawData3D_simple2D');  % [12, 53, 403, 256] [TX*RX Vstep Hstep N]
-rawDataCal = rawData3D_simple2D;
+rawDataCal = rawData3D_simple2D(:, 1:86, 1:300 );
 rawDataFFT = fft(rawDataCal,1024);
 %% Range focusing to z0
 tI = 4.5225e-10; % Instrument delay for range calibration (corresponds to a 6.78cm range offset)
