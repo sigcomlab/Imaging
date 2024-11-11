@@ -1,132 +1,27 @@
+%% SISO imaging for rectangular shapes
 clear
 clc
-%% Big TI Radar Geometry 
-% Dt = 0.065;
-% tx_x = -[0, 0, 0, 0, 0, 0, 0, 0, 0, 0.5, 2, 4] * 0.000975 * 2 + Dt / 2;
-% tx_y =  [0, 4, 8, 12, 16, 20, 24, 28, 32, 9, 10, 11] * 0.000975 * 2 + 0.032;
-% tx_z = 0;
-% 
-% rx_y = [0, 1, 2, 3,11, 12, 13, 14, 46, 47, 48, 49,50, 51, 52, 53] * 0.000975 * 2;
-% rx_x =  -Dt / 2 * ones(1,length (rx_y));
-% rx_z = 0;
-% plot(tx_x, tx_y  ,'O'), hold on, grid on
-% plot(rx_x, rx_y ,'*')
-
-%% Small TI Radar Geometry 
-% Dt = 0;
-% tx_x = [0 -0.002 0]; % 3-TX
-% tx_y = [0.0107 0.0147 0.0183];
-% tx_x = [0 0]; % 2-TX
-% tx_y = [0.0107 0.0183];
-% tx_z = 0;
-
-% rx_x = [0 0 0 0];
-% rx_y = [0 0.0019 0.0038 0.0057];
-% rx_z = 0;
-% plot(tx_x, tx_y  ,'O'), hold on, grid on
-% plot(rx_x, rx_y ,'*','linewidth',6)
-
-%% Radar parameter
 c = 299792458; % physconst('lightspeed'); in m/s
 f_0 = 77e9;
 N = 1024; % number of symbols
-% N_FFT_kx = 512;
-% N_FFT_ky = 512;
+N_FFT_kx = 1024;
+N_FFT_ky = 1024;
 mu = 63.343e12;
-f_s = 9121e3;
-Ts = 1/f_s;
-% f = f_0 + (0:N-1)*mu/f_s; 
-% K = 2*pi*f/c;
-% K = [K(1)];
-% % k = reshape(K,1,1,[]);
-
-%% Making VAs
-% i = 0;
-% for x = 1:length (tx_x)
-%     for y = 1: length(rx_x)
-%         VA_x(i+1) = (tx_x(x) + rx_x(y)) / 2;
-%         VA_y(i+1) = (tx_y(x) + rx_y(y)) / 2;
-%         i = i + 1;
-%     end
-% end
-% plot(VA_x, VA_y ,'+','linewidth',4)
-
-%% Rail Geometry
-% rail_step_x =  0.98e-3;
-% rail_step_y = 7.59e-3;  
-% rail_step_number_x = 403;
-% rail_step_number_y = 53;
-% 
-% rail_x = rail_step_x * [1:rail_step_number_x];
-% rail_y = rail_step_y * [1:rail_step_number_y];
-% plot(rail_x,zeros(1,length(rail_x)), 'linewidth',2)
-% plot(zeros(1,length(rail_y)),rail_y, 'linewidth',2)
-
-%% Target geometry 
-% x = rail_step_x * rail_step_number_x/2 * 1e-3; % in the middel of the rail
-% rang_x_target = linspace(-x, x , 512); 
-% y_num = 512;
-% y = rail_step_y * rail_step_number_y/2 * 1e-3; % y_target
-% rang_y_target = linspace(-y, y, y_num);
 fs = 9121e3;        % Sampling rate (sps)
 Ts = 1/fs;          % Sampling period
-K = 63.343e12; 
 z = .28; % z_target
-% for i = 1: length (rang_x_target)
-%     for j = 1: length (rang_y_target) 
-%         plot (rang_x_target(i),rang_y_target(j),'.', 'linewidth',2)
-%     end
-% end
-
-%%  
-% for x = 1: length(rang_x_target) %x
-%     for y = 1:length(rang_y_target) %y  
-%         for ii = 0:rail_step_number_y-1
-%             % for i = 0:rail_step_number_x-1
-%                 for j = 1:length(tx_x)
-%                     for l = 1:length(rx_x)
-%                         R_T = sqrt (rang_x_target(x) - Dt/2)^2 + (rang_y_target(y) - (tx_y(j) + ii*rail_step_y))^2 + z^2;
-%                         R_R = sqrt (rang_x_target(x) + Dt/2)^2 + (rang_y_target(y) - (rx_y(l) + ii*rail_step_y))^2 + z^2;
-%                         for k = 1:length(K)
-%                             h(x,y,j,l,ii+1,k) = exp(1i * K(k) * R_T) * exp(1i * K(k) * R_R); %k
-%                         end
-%                      end
-%                  end
-%              % end
-%         end
-%     end
-%     x
-% end
-%%
-% x = rang_x_target(1: length(rang_x_target)); %x
-% y = rang_y_target(1:length(rang_y_target))'; 
-x = linspace(-0.25,0.25,1024) * 1e-3;
-y = linspace(-1,1,1024) * 1e-3)';
-
-h = exp(-1i*2*K*sqrt(x.^2 + y.^2 + z^2));
+k = 2*pi*f_0/c;
+x = linspace(-0.25,0.25,N_FFT_kx) ;
+y = (linspace(-1,1,N_FFT_ky))';
+h = exp(-1i*2*k*sqrt(x.^2 + y.^2 + z^2));
 
 %%
-% h : [10, 10, 3, 4, 53, 256];
-% h : [10, 10, 3*4, 53, 256];
-% H : [512, 10, 3*4, 53, 256];
-% s : [403, 3, 4, 53, 256]
-% S:  [403, 12, 53, 256]
-% h = reshape (h, 16, 16, 3 * 4, 53, N);
-% kx = linspace(-(pi/1e-3),(pi/1e-3),N_FFT_kx); % kX-Domain
 [xPointM,yPointM,~] = size(h); 
-% h_padd = padarray(h,[floor((N_FFT_kx-xPointM)/2) 0],0,'pre');
-% h_padd = padarray(h_padd,[ceil((N_FFT_kx-xPointM)/2) 0],0,'post');
-% h_padd = padarray(h_padd,[0 floor((N_FFT_ky-yPointM)/2)],0,'pre');
-% h_padd = padarray(h_padd,[0 ceil((N_FFT_ky-yPointM)/2)],0,'post');
-% H = fftshift(fft(h_padd),1);
-H =  fft2(h); % [   512   512     2     4    53] [Kx y TX RX Vstep]
+H =  fft2(h); 
 %%
 load('rawData3D_simple2D');  % [12, 53, 403, 256] [TX*RX Vstep Hstep N]
-rawDataCal = rawData3D_simple2D;
-% rawDataCal = permute(rawDataCal,[4,3,2,1]);
-% rawDataCal = rawDataCal (:,:,:,1);
+rawDataCal = rawData3D_simple2D(:, 1:86, 1:300 );
 rawDataFFT = fft(rawDataCal,1024);
-
 %% Range focusing to z0
 tI = 4.5225e-10; % Instrument delay for range calibration (corresponds to a 6.78cm range offset)
 k = round(mu*Ts*(2*z/c+tI)*1024); % corresponing range bin
@@ -142,84 +37,7 @@ sarData = squeeze(rawDataFFT(k+1,:,:));
 
 sarDataFFT = fft2(sarData);
 sarImage = fftshift(ifft2(sarDataFFT .* H));
-% 
-% RawDataCal = reshape (rawDataCal,length(tx_x)+1,length(rx_x),[],rail_step_number_x,N);   % [3, 4, 53, 403, 256] [TX RX Vstep Hstep N]
-% RawDataCal = RawDataCal([1,3],:,:,:,:); % [2, 4, 53, 403, 256] [TX RX Vstep Hstep N]
 
-
-
-
-% s = permute (RawDataCal,[4 1 2 3 5]); 
-% s = permute (RawDataCal,[4 1 2 3, 5]);  % [403 2, 4, 53, 256] [ Hstep TX RX Vstep N]
-% s = reshape (s, 403, 3*4, 53, N );
-% s = fft(s, [], 5);
-%%%%%%%%%%%
-
-% freq_scale = ([0:N-1] * f_s) / N; %  # take all positive frequencies: no fftshift
-% range_scale = freq_scale / (2 * mu/c);
-% 
-% [kk,index] = min(abs(range_scale - z));
-
-%%%%%%%%%%%%%%5
-
-% s = s(:,:,:,:,index);
-
-
-
-% k_of_interest =
-% s = s (:, :, :, :, k_of_interest)
-% [xPointM,~] = size(s); 
-% s_padd = padarray(s,[floor((N_FFT_kx-xPointM)/2) 0],0,'pre');
-% s_padd = padarray(s_padd,[ceil((N_FFT_kx-xPointM)/2) 0],0,'post');
-% % S = fftshift(fft(s_padd),1);
-% S =  fft(s_padd, [], 1);  % [  512     2     4    53]
-% S = permute(S, [1,5,2,3,4]);
-% clear s_padd
-% clear s
-% clear RawDataCal
-% % H1 = permute(H,[1,3,4,5,2]);     %[512     2     4    53   512]
-% % H1 = permute(H,[1,3,4,5,6,2]);
-% % [H_1,H_2,H_3,H_4,H_5,H_6] = size(H1);  % time consiming 
-% % [H_1,H_2,H_3,H_4,H_6] = size(H1);  % time consiming 
-% P = S.*H;
-% P1 = sum(sum(sum(P,3),4),5);
-%  for i = 1:H_6
-%      % P(:, :, :, :, :, i) = S(:, :, :, :,:) .* H1(:, :, :, :, :,i);
-%      % 
-%         P(:, :, :, :, i) = S(:, :,:,:) .* H1(:, :, :, :,i);
-% 
-% end
-% P1 = sum(P,2); 
-% clear P
-% P2 = sum(P1,3); 
-% clear P1
-% P3 = sum(P2,4); 
-% clear P2
-% P4 = sum(P3,5); 
-% % clear P3
-% P5 = squeeze(P3);
-% P5 = squeeze(P4);
-% clear P4
-% sarImage = ifft(P5);
-% sarImage = ifft(P5, [], 1);
-% 
-% sarImage = fftshift(ifft(P1, [], 1));
-% sarImage = flip(sarImage,2);
-% clear P5
-% P = zeros(N_FFT_kx, y_num);
-% for i = 1:  (H_1)
-%     for j = 1: (H_3)
-%         for k = 1: (H_4)
-%              for l = 1: (H_5)
-%                 for ll = 1: (H_6)
-%                     P = P + S(i,j,k,l,ll) .*H(i,:,j,k,l,ll);
-%                 end
-%              end
-%         end
-%     end
-% end
-% p = fftshift(ifft(P5),1);
-% p = ifft(P);
 xRangeT_mm = 1e-3 * (-(N_FFT_kx-1)/2 : (N_FFT_kx-1)/2); % xStepM is in mm
 yRangeT_mm = 1e-3 * (-(N_FFT_ky-1)/2 : (N_FFT_ky-1)/2); % xStepM is in mm
 mesh(xRangeT_mm,yRangeT_mm,abs(squeeze(sarImage)),'FaceColor','interp','LineStyle','none')
