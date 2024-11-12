@@ -73,7 +73,6 @@ for ii = 0:rail_step_number_y-1
                     x_prime = (tx_x(j) + rx_x(l)) / 2 + i * rail_step_x;
                     y_prime = (tx_y(j) + rx_y(l)) / 2 + ii* rail_step_y;
                     % plot(x_prime,y_prime,'o','LineWidth',2), hold on, grid on
-
                     R_T = sqrt ((x-(x_prime + delta_T/2))^2 + (y-tx_y(j))^2 + (z)^2);
                     R_R = sqrt ((x-(x_prime - delta_T/2))^2 + (y-rx_y(l))^2 + (z)^2);
                     R = sqrt ((x-x_prime)^2 + (y-y_prime)^2 + (z)^2);
@@ -95,11 +94,15 @@ end
 % for idx = 1:86
 %     s_tilde_uniform(:, idx, :) = s_tilde(:,tx_idx(idx)+1, rx_idx(idx)+1, :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
 % end
+%%
+s_tilde2 = reshape(s_tilde,[300,9*16,512]);
+
+
 for idx = 1:length(TX_useful)
     s_tilde_uniform(:, idx, :) = s_tilde(:,TX_useful(idx), Rx_usful(idx), :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
 end
 % s_tilde_uniform = reshape (s_tilde,9*16,rail_step_number_x,N);
-
+%%
 [xPointM,yPointM,~] = size(s_tilde_uniform);
 
 s_tilde_uniform_padd = padarray(s_tilde_uniform,[floor((N_FFT_kx-xPointM)/2) 0],0,'pre');
@@ -114,7 +117,7 @@ phaseFactor = exp(-1i*z*kz);
 phaseFactor= permute(phaseFactor,[2 1 3]);  % [512 1024 512]
 S_tilde_kx_ky = S_tilde_kx_ky .* phaseFactor;  % [512 1024 512]
 S_tilde_kx_ky = sum(S_tilde_kx_ky,3);  % [512 1024]
-sarImage = ifft2(S_tilde_kx_ky);  % [512 1024]
+sarImage = ifft2(S_tilde_kx_ky); %ifft2(S_tilde_kx_ky);  % [512 1024]
 sarImage = flip(sarImage,2);  % [512 1024]
 
 xRangeT_mm = 1e-3 * (-(N_FFT_kx-1)/2 : (N_FFT_kx-1)/2); % xStepM is in mm
