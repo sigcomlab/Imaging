@@ -1,7 +1,7 @@
 %% RMA method based on the data of Big TI in our Lab  based on the method in 'Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds'.
 clear
 clc
-close all
+% close all
 load('pliers_calibrated.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
 % load('tx_x.mat'),load("tx_y.mat"),load("rx_x.mat"),load("rx_y.mat"),
 tx_x = [0	0	0	0	0	0	0	0	0	0.00191082802547771	0.00764331210191083	0.0114649681528662];
@@ -96,11 +96,11 @@ end
 % end
 %%
 s_tilde2 = reshape(s_tilde,[300,9*16,512]);
+s_tilde_uniform  = s_tilde2(:,sort(iX),:); 
 
-
-for idx = 1:length(TX_useful)
-    s_tilde_uniform(:, idx, :) = s_tilde(:,TX_useful(idx), Rx_usful(idx), :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
-end
+% for idx = 1:length(TX_useful)
+%     s_tilde_uniform(:, idx, :) = s_tilde(:,TX_useful(idx), Rx_usful(idx), :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
+% end
 % s_tilde_uniform = reshape (s_tilde,9*16,rail_step_number_x,N);
 %%
 [xPointM,yPointM,~] = size(s_tilde_uniform);
