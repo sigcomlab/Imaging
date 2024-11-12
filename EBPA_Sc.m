@@ -40,8 +40,8 @@ rail_step_number_x = 403;
 rail_step_number_y = 53;
 
 for ii = 0:rail_step_number_y-1
-    h(:,:,ii+1,:,:) = exp(-1i*k*sqrt(x.^2 + (y-(tx_y + ii*rail_step_y)).^2 + z^2)) .* ... % tx_y : 1 3 1 1 ------>   1  3 1024 1 ---> 1 3 1024 512
-        exp(-1i*k*sqrt(x.^2 + (y-(rx_y + ii*rail_step_y)).^2 + z^2)) ;     % rx_y : 4 1 1 1 ------>   4  1 1024 1 ---> 4 1 1024 512
+    h(:,:,ii+1,:,:) = exp(-1i*k*sqrt(x.^2 + (y-(tx_y + ii*rail_step_y)).^2 + z^2)) .* ... 
+        exp(-1i*k*sqrt(x.^2 + (y-(rx_y + ii*rail_step_y)).^2 + z^2)) ;     
 end
 H = fft(h, [], 1); % [512 1024 53 2 4]
 clear h
