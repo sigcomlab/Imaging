@@ -1,6 +1,7 @@
 %% RMA method based on the data of Big TI in our Lab  based on the method in 'Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds'.
 clear
 clc
+close all
 load('pliers_calibrated.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
 % load('tx_x.mat'),load("tx_y.mat"),load("rx_x.mat"),load("rx_y.mat"),
 tx_x = [0	0	0	0	0	0	0	0	0	0.00191082802547771	0.00764331210191083	0.0114649681528662];
@@ -12,20 +13,24 @@ tx_y (10:12) = [];
 s = s_full;
 s = s(:,[1:9],:,:);  % Removing not align TX ones
 delta_T = rx_x (1);
-% plot(tx_x, tx_y  ,'O'), hold on, grid on
-% plot(rx_x, rx_y ,'*')
+plot(tx_x, tx_y  ,'O'), hold on, grid on
+plot(rx_x, rx_y ,'*')
 
-%% Making VAs
-% i = 0;
-% for x = 1:length (tx_x)
-%     for y = 1: length(rx_x)
-%         VA_x(i+1) = (tx_x(x) + rx_x(y)) / 2;
-%         VA_y(i+1) = (tx_y(x) + rx_y(y)) / 2;
-%         i = i + 1;
-%     end
-% end
-% plot(VA_x, VA_y ,'+')
-
+%% Making VAs and narrow down the non-overlapped ones
+i = 0;
+for x = 1:length (tx_x)
+    for y = 1: length(rx_x)
+        VA_x(i+1) = (tx_x(x) + rx_x(y)) / 2;
+        VA_y(i+1) = (tx_y(x) + rx_y(y)) / 2;
+        plot(VA_x(i+1), VA_y(i+1) ,'.')
+        i = i + 1;
+        C(:,i) = [x y];
+    end
+end
+[UniqX, iX] = unique(round(VA_y,4));
+VA_useful =  C(:,iX); % [TX_index  RX_index] 
+TX_useful = VA_useful(1,:); % index of usefule Tx for making 86 VAs [1*86]
+Rx_usful = VA_useful(2,:);  % index of usefule Rx for making 86 VAs [1*86]
 %% Define Frequency Spectrum
 c = 299792458; % physconst('lightspeed'); in m/s
 f_0 = 78.5e9;
@@ -82,15 +87,17 @@ for ii = 0:rail_step_number_y-1
     end
 end
 % [300 12 16 512], [x-step-on-rail TX RX N]
-tx_idx = [0 0 0 0 1 1 1 1 2 2 2 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 ...
-    8 8 8 0 0 0 0 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 8 8 8 8];
-rx_idx = [ 0  1  2  3  0  1  2  3  0  1  2  4  5  6  7  4  5  6  7  4  5  6  7  4 ...
-    5  6  7  4  5  6  7  4  5  6  7  4  5  6  7  4  5  6  7  4  5  6  8  9 10 11 12 13 ...
-    14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15];
-for idx = 1:86
-    s_tilde_uniform(:, idx, :) = s_tilde(:,tx_idx(idx)+1, rx_idx(idx)+1, :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
+% tx_idx = [0 0 0 0 1 1 1 1 2 2 2 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 ...
+%     8 8 8 0 0 0 0 0 0 0 0 1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4 5 5 5 5 6 6 6 6 7 7 7 7 8 8 8 8];
+% rx_idx = [ 0  1  2  3  0  1  2  3  0  1  2  4  5  6  7  4  5  6  7  4  5  6  7  4 ...
+%     5  6  7  4  5  6  7  4  5  6  7  4  5  6  7  4  5  6  7  4  5  6  8  9 10 11 12 13 ...
+%     14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15];
+% for idx = 1:86
+%     s_tilde_uniform(:, idx, :) = s_tilde(:,tx_idx(idx)+1, rx_idx(idx)+1, :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
+% end
+for idx = 1:length(TX_useful)
+    s_tilde_uniform(:, idx, :) = s_tilde(:,TX_useful(idx), Rx_usful(idx), :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
 end
-
 % s_tilde_uniform = reshape (s_tilde,9*16,rail_step_number_x,N);
 
 [xPointM,yPointM,~] = size(s_tilde_uniform);
