@@ -1,5 +1,5 @@
 %% SISO imaging for rectangular shapes in small MIMO radar
-%% basd on the Muhammet Emin Yanik paper
+%% basd on the Muhammet Emin Yanik paper 'Near-Field MIMO-SAR Millimeter-Wave Imaging With Sparsely Sampled Aperture Data'.
 clear
 clc
 c = 299792458; % physconst('lightspeed'); in m/s
