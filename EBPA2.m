@@ -1,4 +1,5 @@
 %% SISO imaging for rectangular shapes in small MIMO radar
+%% basd on the Muhammet Emin Yanik paper
 clear
 clc
 c = 299792458; % physconst('lightspeed'); in m/s

@@ -1,4 +1,5 @@
 %% RMA method for the data wich provided by yanik in small TI MIMo radar
+%% basd on the Muhammet Emin Yanik paper
 clear
 clc
 % close all
