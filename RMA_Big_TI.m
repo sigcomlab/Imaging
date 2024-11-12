@@ -1,4 +1,4 @@
-%% RMA method based on the data of Big TI in our Lab 
+%% RMA method based on the data of Big TI in our Lab  based on the method in ''Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds.
 clear
 clc
 load('pliers_calibrated.mat') % [300 12 16 512], [x-step-on-rail TX RX N]

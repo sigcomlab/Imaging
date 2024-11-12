@@ -1,5 +1,5 @@
 %% RMA method for the data wich provided by yanik in small TI MIMo radar
-%% basd on the Muhammet Emin Yanik paper
+%% basd on the Muhammet Emin Yanik paper ''Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds.
 clear
 clc
 % close all
