@@ -1,5 +1,4 @@
-%% EBPA method for the data wich provided in big TI MIMo radar for Pliers based on the method in article : 'Development and Demonstration of MIMO-SAR
-mmWave Imaging Testbeds'
+%% EBPA method for the data wich provided in big TI MIMo radar for Pliers based on the method in article 'Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds'
 clear
 clc
 %% TX RX position
