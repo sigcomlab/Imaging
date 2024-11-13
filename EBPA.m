@@ -36,8 +36,12 @@ y = dy * ([0:N_FFT_ky - 1] - N_FFT_ky / 2);  % 1 1 1024 1
 lambda = 3e8/f_0;
 rail_step_x = 0.98e-3;
 rail_step_y = 7.59e-3; % 8*lambda/4; 
-rail_step_number_x = 403;
-rail_step_number_y = 53;
+
+load('RawDataCal.mat');  % [12, 53, 403, 256] [TX*RX Vstep Hstep N]
+rawDataCal = rawDataCal(:,25:36,:,:); % by reducing the number of vertical
+% steps, it does not work
+rail_step_number_x = size(rawDataCal,3);
+rail_step_number_y = size(rawDataCal,2);
 
 for ii = 0:rail_step_number_y-1
     h(:,:,ii+1,:,:) = exp(-1i*k*sqrt(x.^2 + (y-(tx_y + ii*rail_step_y)).^2 + z^2)) .* ... 
@@ -47,7 +51,6 @@ H = fft(h, [], 1); % [512 1024 53 2 4]
 clear h
 
 %%
-load('RawDataCal.mat');  % [12, 53, 403, 256] [TX*RX Vstep Hstep N]
 rawDataFFT = fft(rawDataCal,N0,4); % [12, 53, 403, 2048] [TX*RX Vstep Hstep N0]
 clear rawDataCal
 %% Range focusing to z0

@@ -24,7 +24,9 @@ N_FFT_ky = 1024; % number of symbols in y-axis
 mu = 86e12; % Slope
 fs = 10e6;        % Sampling rate (sps)
 Ts = 1/fs;          % Sampling period
-z = .75; % z_target
+z = .75; % z_target for pliers
+% z = .419 ; % z_target
+
 km = mu / c;
 k = 2*pi*f_0/c;
 
@@ -47,6 +49,7 @@ H = fft(h, [], 1); % [512 1024 1 9 16]
 clear h
 
 %%
+% load('scissors.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
 load('pliers_calibrated.mat');  % [300 12 16 512] [Vstep_on_rail TX RX N]
 rawDataFFT = fft(s_full,N0,4); % [300 12 16 2048] [Vstep_on_rail TX RX N0]
 clear rawDataCal
@@ -70,4 +73,5 @@ P = S.*H; % [512 1024 1 9 16]
 P1 = sum(sum(sum(P,3),4),5); % [512 1024]
 sarImage =fftshift( fftshift(ifft(P1, [], 1)),2); % [512 1024]
 % figure
+sarImage = flip(sarImage,2);  % [512 1024]
 imagesc(abs(squeeze(sarImage)'));

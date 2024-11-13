@@ -2,6 +2,7 @@
 clear
 clc
 % close all
+% load('scissors.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
 load('pliers_calibrated.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
 % load('tx_x.mat'),load("tx_y.mat"),load("rx_x.mat"),load("rx_y.mat"),
 tx_x = [0	0	0	0	0	0	0	0	0	0.00191082802547771	0.00764331210191083	0.0114649681528662];
@@ -13,8 +14,8 @@ tx_y (10:12) = [];
 s = s_full;
 s = s(:,[1:9],:,:);  % Removing not align TX ones
 delta_T = rx_x (1);
-plot(tx_x, tx_y  ,'O'), hold on, grid on
-plot(rx_x, rx_y ,'*')
+% plot(tx_x, tx_y  ,'O'), hold on, grid on
+% plot(rx_x, rx_y ,'*')
 
 %% Making VAs and narrow down the non-overlapped ones
 i = 0;
@@ -27,10 +28,10 @@ for x = 1:length (tx_x)
         C(:,i) = [x y];
     end
 end
-[UniqX, iX] = unique(round(VA_y,4));
+[UniqX, iX,iY] = unique(round(VA_y,4));
 VA_useful =  C(:,iX); % [TX_index  RX_index] 
 TX_useful = VA_useful(1,:); % index of usefule Tx for making 86 VAs [1*86]
-Rx_usful = VA_useful(2,:);  % index of usefule Rx for making 86 VAs [1*86]
+RX_useful = VA_useful(2,:);  % index of usefule Rx for making 86 VAs [1*86]
 %% Define Frequency Spectrum
 c = 299792458; % physconst('lightspeed'); in m/s
 f_0 = 78.5e9;
@@ -53,7 +54,8 @@ kz((kx.^2 + ky.^2) > (2*k).^2) = 0;
 %% calculation the distances
 x = 0.15;  % x_target;
 y = 0.0; % y_target; 
-z = .835; % z_target;
+z = .85; % z_target for pliers;
+% z = .399; % z_target for scissors;
 
 rail_step_x = 0.975e-3; % each step in x-axis on the rail
 rail_step_y = 0.975e-3*86;  % each step in y-axis on the rail
@@ -91,12 +93,12 @@ end
 % rx_idx = [ 0  1  2  3  0  1  2  3  0  1  2  4  5  6  7  4  5  6  7  4  5  6  7  4 ...
 %     5  6  7  4  5  6  7  4  5  6  7  4  5  6  7  4  5  6  7  4  5  6  8  9 10 11 12 13 ...
 %     14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15 12 13 14 15];
-% for idx = 1:86
-%     s_tilde_uniform(:, idx, :) = s_tilde(:,tx_idx(idx)+1, rx_idx(idx)+1, :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
-% end
+for idx = 1:86
+    s_tilde_uniform(:, idx, :) = s_tilde(:,TX_useful(idx), RX_useful(idx), :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
+end
 %%
-s_tilde2 = reshape(s_tilde,[300,9*16,512]);
-s_tilde_uniform  = s_tilde2(:,sort(iX),:); 
+% s_tilde2 = reshape(s_tilde,[300,9*16,512]);
+% s_tilde_uniform  = s_tilde2(:,sort(iX),:); 
 
 % for idx = 1:length(TX_useful)
 %     s_tilde_uniform(:, idx, :) = s_tilde(:,TX_useful(idx), Rx_usful(idx), :);   % [300 86*1 512], [x-step on rail TX RX N] after removing overlapped ones
