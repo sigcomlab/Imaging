@@ -1,6 +1,12 @@
-%% EBPA method for the data wich provided in big TI MIMo radar for Pliers based on the method in article 'Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds'
+%% EBPA method for the data wich provided in big TI MIMo radar for Pliers/scissors based on the method in article 'Development and Demonstration of MIMO-SAR mmWave Imaging Testbeds'
 clear
 clc
+%% Selection the data between pliers or scissors
+% load('scissors.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
+% z = 0.4 ; % z_target for scissors
+
+load('pliers_calibrated.mat');  % [300 12 16 512] [Vstep_on_rail TX RX N]
+z = 0.75; % z_target for pliers (The distance between target and radar)
 %% TX RX position
 tx_x = [0	0	0	0	0	0	0	0	0	0.00191082802547771	0.00764331210191083	0.0114649681528662];
 tx_y = [0.0152866242038217	0.0229299363057325	0.0305732484076433	0.0382165605095541	0.0458598726114650	0.0535031847133758	0.0611464968152866	0.0687898089171975	0.0764331210191083	0.0324840764331210	0.0343949044585987	0.0363057324840764];
@@ -13,7 +19,6 @@ tx_y (10:12) = [];
 % Appropriate allocation of TX and RX on the 4-D matrix
 tx_y = permute(tx_y,[4,3,2,1]) + randn(1,1,9)*0.000001;  % [1 1 9] --> [1 1 TX]
 rx_y = permute(rx_y,[4,3,1,2]) + randn(1,1,1,16)*0.000001; % [1 1 1 16] --> [1 1 1 RX]
-
 delta_T = 0; % Distance between TX and RX
 %% Radar properties
 c = 299792458; % physconst('lightspeed'); in m/s
@@ -25,8 +30,6 @@ N_FFT_ky = 1024; % number of symbols in y-axis
 mu = 86e12; % Slope
 fs = 10e6;        % Sampling rate (sps)
 Ts = 1/fs;          % Sampling period
-z = 0.75; % z_target for pliers
-% z = 0.4 ; % z_target for scissors
 km = mu / c;
 k = 2*pi*f_0/c;
 % rail steps
@@ -47,9 +50,7 @@ for ii = 0:rail_step_number_y-1
 end
 H = fft(h, [], 1); % [512 1024 1 9 16] 
 clear h
-%% Importing the data (pliers, scissors)
-% load('scissors.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
-load('pliers_calibrated.mat');  % [300 12 16 512] [Vstep_on_rail TX RX N]
+%% FFT of the data (pliers, scissors)
 rawDataFFT = fft(s_full,N0,4); % [300 12 16 2048] [Vstep_on_rail TX RX N0]
 clear rawDataCal
 %% Range focusing to z0
