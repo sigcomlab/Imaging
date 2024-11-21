@@ -18,8 +18,8 @@ s = s_full;
 s = s(:,[1:9],:,:);  % Removing not align TX ones
 delta_T = rx_x (1); % the distance between RX and TX elements
 % plotting TX RX elements
-% plot(tx_x, tx_y  ,'O'), hold on, grid on
-% plot(rx_x, rx_y ,'*')
+plot(tx_x, tx_y  ,'O'), hold on, grid on
+plot(rx_x, rx_y ,'*')
 %% Making VAs and narrow down the non-overlapped ones
 i = 0;
 for x = 1:length (tx_x)
@@ -64,8 +64,8 @@ rail_step_number_x = 300; % number of steps in x-axis
 rail_step_number_y = 1; % number of steps in y-axis
 rail_x = rail_step_x * (1:rail_step_number_x); % steps in x-axis
 rail_y = rail_step_y * (1:rail_step_number_y); % steps in y-axis
-% plot(rail_x,zeros(1,length(rail_x)), '.', 'linewidth',2)
-% plot(zeros(1,length(rail_y)),rail_y, '.', 'linewidth',2)
+plot(rail_x,zeros(1,length(rail_x)), '.', 'linewidth',2)
+plot(zeros(1,length(rail_y)),rail_y, '.', 'linewidth',2)
 %% RMA method for Image reconstruction
 RawDataCal = s;
 

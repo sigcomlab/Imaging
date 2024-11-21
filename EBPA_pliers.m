@@ -2,24 +2,29 @@
 clear
 clc
 %% Selection the data between pliers or scissors
-% load('scissors.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
-% z = 0.4 ; % z_target for scissors
+load('scissors.mat') % [300 12 16 512], [x-step-on-rail TX RX N]
+z = 0.4 ; % z_target for scissors
 
-load('pliers_calibrated.mat');  % [300 12 16 512] [Vstep_on_rail TX RX N]
-z = 0.75; % z_target for pliers (The distance between target and radar)
+% load('pliers_calibrated.mat');  % [300 12 16 512] [Vstep_on_rail TX RX N]
+% z = 0.75; % z_target for pliers (The distance between target and radar)
 %% TX RX position
 tx_x = [0	0	0	0	0	0	0	0	0	0.00191082802547771	0.00764331210191083	0.0114649681528662];
 tx_y = [0.0152866242038217	0.0229299363057325	0.0305732484076433	0.0382165605095541	0.0458598726114650	0.0535031847133758	0.0611464968152866	0.0687898089171975	0.0764331210191083	0.0324840764331210	0.0343949044585987	0.0363057324840764];
 rx_x = [0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420	0.0649681528662420];
 rx_y = [0	0.00191082802547771	0.00382165605095541	0.00573248407643312	0.0210191082802548	0.0229299363057325	0.0248407643312102	0.0267515923566879	0.0878980891719745	0.0898089171974522	0.0917197452229299	0.0936305732484077	0.0955414012738854	0.0974522292993631	0.0993630573248408	0.101273885350318];
+% plotting TX RX elements
+% plot(tx_x, tx_y  ,'O'), hold on, grid on
+% plot(rx_x, rx_y ,'*')
+
 % load('tx_x.mat'),load("tx_y.mat"),load("rx_x.mat"),load("rx_y.mat"),
 % Removing non-aligned TXs
 tx_x (10:12) = []; 
 tx_y (10:12) = [];
 % Appropriate allocation of TX and RX on the 4-D matrix
-tx_y = permute(tx_y,[4,3,2,1]) + randn(1,1,9)*0.000001;  % [1 1 9] --> [1 1 TX]
-rx_y = permute(rx_y,[4,3,1,2]) + randn(1,1,1,16)*0.000001; % [1 1 1 16] --> [1 1 1 RX]
+tx_y = permute(tx_y,[4,3,2,1]);  % [1 1 9] --> [1 1 TX]
+rx_y = permute(rx_y,[4,3,1,2]); % [1 1 1 16] --> [1 1 1 RX]
 delta_T = 0; % Distance between TX and RX
+
 %% Radar properties
 c = 299792458; % physconst('lightspeed'); in m/s
 f_0 = 78.5e9;
