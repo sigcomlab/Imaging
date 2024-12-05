@@ -42,25 +42,56 @@ theta = [-40:1:40];
 K = length(theta);
 khi = zeros(n_T, n_R, K);
  % eq. 4
-W = 0.05*(randn(n_T,n_R)+1i*randn(n_T,n_R)); % Noise 
+W = 0.0000001*(randn(n_T,n_R)+1i*randn(n_T,n_R)); % Noise 
+
+C_Tme = [0.99*exp(1i*(0.1)) 0.0263*exp(1i*(-0.14)); 0.0199*exp(1i*(-0.01)) 1*exp(1i*(0))] ;
+C_Rme = [0.9219*exp(1i*(-0.14)) 0.0852*exp(1i*(-1.78)) 0.0781*exp(1i*(1.93)) 0.0814*exp(1i*(2.52));
+         0.0712*exp(1i*(3.08)) 0.8766*exp(1i*(0.12)) 0.1211*exp(1i*(-1.74)) 0.0789*exp(1i*(-0.41))
+         0.0784*exp(1i*(-0.71)) 0.1080*exp(1i*(-1.85)) 0.8107*exp(1i*(0.1)) 0.1485*exp(1i*(-3.01))
+         0.0640*exp(1i*(1.73)) 0.0498*exp(1i*(1.05)) 0.1048*exp(1i*(-1.33)) 1*exp(1i*(-0))];
+
+% for i = 1:K
+%      A = exp (-1i* ((2*pi*f_0)/c) * (x_T' + x_R) * sind(theta(i))); 
+%      S = exp (-1i* ((2*pi*f_0)/c) * (2*R + x_c*sind(theta(i)) + y_c*sind(theta(i)))) * A;
+%      X = C_Tme * S * C_Rme + W;
+% end
+% 
+% for q = 1: 90 
+%     for i = 1: K
+%         khi(:,:,i) = X;
+%         phi(:,:,i) = C_T * S;
+%     end
+%     Khi = reshape(permute(khi,[2,1,3]),size(khi,2),[])';
+%     Phi = reshape(permute(phi,[2,1,3]),size(phi,2),[])';
+%     C_R = (Phi' * Phi)^-1 * Phi' * Khi;  
+% 
+%     for i = 1: K
+%         khi_p(:,:,i) = X;
+%         gamma(:,:,i) = S * C_R;
+%     end
+%     Khi_p = reshape(permute(khi_p,[1,2,3]),size(khi_p,1),[]);
+%     Gamma = reshape(permute(gamma,[1,2,3]),size(gamma,1),[]);
+%     C_T = Khi_p * Gamma' * (Gamma * Gamma')^-1;
+% 
+% end
 for q = 1: 90 
     for i = 1: K
         A = exp (-1i* ((2*pi*f_0)/c) * (x_T' + x_R) * sind(theta(i))); 
         S = exp (-1i* ((2*pi*f_0)/c) * (2*R + x_c*sind(theta(i)) + y_c*sind(theta(i)))) * A;
-        X = C_T * S * C_R + W;
-    
+        X = C_Tme * S * C_Rme + W;
+
         khi(:,:,i) = X;
         phi(:,:,i) = C_T * S;
     end
     Khi = reshape(permute(khi,[2,1,3]),size(khi,2),[])';
     Phi = reshape(permute(phi,[2,1,3]),size(phi,2),[])';
     C_R = (Phi' * Phi)^-1 * Phi' * Khi;  
-    
+
     for i = 1: K
         A = exp (-1i* ((2*pi*f_0)/c) * (x_T' + x_R) * sind(theta(i))); 
         S = exp (-1i* ((2*pi*f_0)/c) * (2*R + x_c*sind(theta(i)) + y_c*sind(theta(i)))) * A;
-        X_p = C_T * S * C_R + W;
-    
+        X_p = C_Tme * S * C_Rme + W;
+
         khi_p(:,:,i) = X_p;
         gamma(:,:,i) = S * C_R;
     end
